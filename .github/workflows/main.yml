@@ -29,7 +29,8 @@ jobs:
     - name: Set up Firebase credentials
       run: |
         echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > config/activationKey.json
-        cat config/activationKey.json  # Debugging step to verify content
+        ls -l config/activationKey.json
+        cat config/activationKey.json | head -n 10  # Print the first 10 lines for debugging
 
     - name: Run the script
       run: python main.py
