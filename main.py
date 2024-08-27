@@ -1,3 +1,4 @@
+import os
 import time
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -18,8 +19,14 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
-# Initialize Firebase
-cred = credentials.Certificate('config/activationKey.json')  # Replace with your JSON file path
+# Initialize Firebase using credentials from environment variable
+firebase_creds = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+
+# Write the credentials to a temporary file
+with open('firebase_credentials.json', 'w') as f:
+    f.write(firebase_creds)
+
+cred = credentials.Certificate('firebase_credentials.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -85,3 +92,5 @@ def save_to_firestore(itemNames, itemPrices, urls):
 
 save_to_firestore(itemNames, itemPrices, urls)
 
+# Cleanup: remove the temporary credentials file
+os.remove('firebase_credentials.json')
