@@ -22,6 +22,9 @@ driver = webdriver.Chrome(service=service, options=chrome_options)
 # Initialize Firebase using credentials from environment variable
 firebase_creds = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
 
+if not firebase_creds:
+    raise ValueError("Firebase credentials not found in environment variable.")
+
 # Write the credentials to a temporary file
 with open('firebase_credentials.json', 'w') as f:
     f.write(firebase_creds)
