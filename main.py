@@ -10,6 +10,21 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
+# Debugging: Check if the environment variable is set
+firebase_creds = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+if not firebase_creds:
+    print("Firebase credentials not found in environment variable.")
+    raise ValueError("Firebase credentials not found in environment variable.")
+
+# Write the credentials to a temporary file
+with open('firebase_credentials.json', 'w') as f:
+    f.write(firebase_creds)
+
+# Initialize Firebase
+cred = credentials.Certificate('firebase_credentials.json')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
 # Setup Chrome WebDriver with options for headless mode
 chrome_options = Options()
 chrome_options.add_argument("--headless")
@@ -19,20 +34,6 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
-# Initialize Firebase using credentials from environment variable
-firebase_creds = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
-
-if not firebase_creds:
-    raise ValueError("Firebase credentials not found in environment variable.")
-
-# Write the credentials to a temporary file
-with open('firebase_credentials.json', 'w') as f:
-    f.write(firebase_creds)
-
-cred = credentials.Certificate('firebase_credentials.json')
-firebase_admin.initialize_app(cred)
-db = firestore.client()
-
 # List of URLs to scrape
 urls = [
     'https://www.jbhifi.com.au/products/apple-iphone-11-4g-128gb-black',
@@ -40,7 +41,7 @@ urls = [
     'https://www.jbhifi.com.au/products/apple-ipad-10-9-inch-64gb-wi-fi-silver-10th-gen',
     'https://www.jbhifi.com.au/products/lenovo-ideacentre-aio-3-27-fhd-all-in-one-pc-intel-i5512gb'
 ]
-itemNames = ['iphone 11', 'Hp Laptop', 'Ipad','Lenovo PC']
+itemNames = ['iphone 11', 'Hp Laptop', 'Ipad', 'Lenovo PC']
 itemPrices = []
 
 def safe_find_element(by, value):
