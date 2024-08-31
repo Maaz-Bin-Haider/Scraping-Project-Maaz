@@ -43,6 +43,7 @@ urls = [
 ]
 itemNames = ['iphone 11', 'Hp Laptop', 'Ipad', 'Lenovo PC']
 itemPrices = []
+targetedPrice = [0,0,0,0]
 
 def safe_find_element(by, value):
     for _ in range(3):  # Retry 3 times
@@ -84,17 +85,18 @@ for i, name in enumerate(itemNames):
     print(f"{name} price: {itemPrices[i]}")
 
 # Save scraped data to Firestore
-def save_to_firestore(itemNames, itemPrices, urls):
+def save_to_firestore(itemNames, itemPrices, urls,targatedPrice):
     for i, name in enumerate(itemNames):
         doc_ref = db.collection('products').document(name)
         doc_ref.set({
             'name': name,
             'price': itemPrices[i],
-            'url': urls[i]
+            'url': urls[i],
+            'targetedPrice':targatedPrice[i]
         })
     print("Data saved to Firestore successfully.")
 
-save_to_firestore(itemNames, itemPrices, urls)
+save_to_firestore(itemNames, itemPrices, urls,targetedPrice)
 
 # Cleanup: remove the temporary credentials file
 os.remove('firebase_credentials.json')
