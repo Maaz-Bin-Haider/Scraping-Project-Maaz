@@ -85,7 +85,7 @@ for i, name in enumerate(itemNames):
     print(f"{name} price: {itemPrices[i]}")
 
 # Save scraped data to Firestore
-def save_to_firestore(itemNames, itemPrices, urls,targatedPrice):
+def save_to_firestore(itemNames, itemPrices, urls):
     for i, name in enumerate(itemNames):
         doc_ref = db.collection('products').document(name)
         doc_ref.update({
@@ -95,7 +95,7 @@ def save_to_firestore(itemNames, itemPrices, urls,targatedPrice):
         })
     print("Data saved to Firestore successfully.")
 
-save_to_firestore(itemNames, itemPrices, urls,targetedPrice)
+save_to_firestore(itemNames, itemPrices, urls)
 
 # Cleanup: remove the temporary credentials file
 os.remove('firebase_credentials.json')
