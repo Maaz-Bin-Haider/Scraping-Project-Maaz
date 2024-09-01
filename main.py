@@ -103,6 +103,7 @@ def notify_users():
 
     # Fetch all user documents from 'UsersInfo' collection
     users_ref = db.collection('UsersInfo').stream()
+    print(users_ref)
 
     for user_doc in users_ref:
         user_id = user_doc.id  # The document ID is the user ID
