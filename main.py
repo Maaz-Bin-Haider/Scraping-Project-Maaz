@@ -100,6 +100,7 @@ save_to_firestore(itemNames, itemPrices, urls)
 # function to compare prices
 def notify_users():
     users_ref = db.collection('UsersInfo').stream()
+    print('notify function called')
 
     for user in users_ref:
         user_id = user.id  # Get the UID of the user
