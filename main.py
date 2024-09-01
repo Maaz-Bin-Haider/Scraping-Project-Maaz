@@ -104,15 +104,17 @@ def notify_users():
 
     for user in users_ref:
         user_id = user.id  # Get the UID of the user
-        
+        print(user_id)
         # Get all documents in the user's email collection
         user_email_collections = user_id.reference.collections()
         
         for user_email_collection in user_email_collections:
+            print(user_email_collection)
             user_products_ref = user_email_collection.stream()
             
             for product in user_products_ref:
                 product_data = product.to_dict()
+                print(product)
                 fcm_token = product_data.get('FCM-Token')
                 
                 # Fetch product information from the 'products' collection
@@ -120,6 +122,7 @@ def notify_users():
                 
                 for prod in products_ref:
                     product_name = prod.id  # Get the document ID which is the product name
+                    
                     prod_data = prod.to_dict()
                     actual_price = float(prod_data.get('price').replace('$', '').replace(',', ''))
                     target_price = float(prod_data.get('targetedPrice').replace('$', '').replace(',', ''))
