@@ -97,58 +97,36 @@ def save_to_firestore(itemNames, itemPrices, urls):
 
 save_to_firestore(itemNames, itemPrices, urls)
 
-# function to compare prices
-def notify_users():
-    print('notify function called')
-
-    # Fetch all user documents from 'UsersInfo' collection
-    users_ref = db.collection('UsersInfo').stream()
-    print(users_ref)
-
-    for user_doc in users_ref:
-        user_id = user_doc.id  # The document ID is the user ID
-        print(f'Processing User ID: {user_id}')
-
-        # Access the user's email collection
-        user_email_collections_ref = db.collection('UsersInfo').document(user_id).collections()
+# Fetch user tokens and targeted prices
+def send_notifications():
+    users_ref = db.collection('UsersInfo')
+    products_ref = db.collection('products')
+    
+    for user_doc in users_ref.stream():
+        user_email = user_doc.id
+        tokens_ref = user_doc.reference.collection(user_email)
+        tokens = [doc.to_dict()['FCM-Token'] for doc in tokens_ref.stream()]
         
-        for user_email_collection in user_email_collections_ref:
-            email_collection_name = user_email_collection.id
-            print(f'Processing Email Collection: {email_collection_name}')
-            
-            # Get documents (each document contains FCM token)
-            user_email_docs = user_email_collection.stream()
-            
-            for email_doc in user_email_docs:
-                email_doc_data = email_doc.to_dict()
-                fcm_token = email_doc_data.get('FCM-Token')
-                print(f'FCM Token: {fcm_token}')
+        for product_name, price in zip(itemNames, itemPrices):
+            product_doc = products_ref.document(product_name).get()
+            if product_doc.exists:
+                product_data = product_doc.to_dict()
+                targeted_price = product_data.get('targetedPrice')
                 
-                # Fetch product information from the 'products' collection
-                products_ref = db.collection('products').stream()
-                
-                for prod in products_ref:
-                    product_name = prod.id  # Document ID is the product name
-                    prod_data = prod.to_dict()
-                    actual_price = float(prod_data.get('price').replace('$', '').replace(',', ''))
-                    target_price = float(prod_data.get('targetedPrice').replace('$', '').replace(',', ''))
-                    print(f'Product: {product_name}, Actual Price: {actual_price}, Target Price: {target_price}')
+                if targeted_price and price == targeted_price:
+                    message = messaging.Message(
+                        notification=messaging.Notification(
+                            title='Price Alert',
+                            body=f'The price for {product_name} has reached your target price of {targeted_price}.',
+                        ),
+                        tokens=tokens
+                    )
                     
-                    # Compare the prices and notify if necessary
-                    if actual_price <= target_price:
-                        # Send notification via FCM
-                        message = messaging.Message(
-                            notification=messaging.Notification(
-                                title="Price Alert!",
-                                body=f"The price for {product_name} has dropped to your target price!",
-                            ),
-                            token=fcm_token,
-                        )
-                        response = messaging.send(message)
-                        print(f'Successfully sent notification for {product_name}: {response}')
+                    response = messaging.send_multicast(message)
+                    print(f'Sent notifications to {len(tokens)} users. Success count: {response.success_count}')
 
-# Call the notify_users function
-notify_users()
+send_notifications()
+
 
 
 
