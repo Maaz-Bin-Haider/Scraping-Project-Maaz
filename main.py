@@ -103,43 +103,57 @@ def notify_users():
     print('notify function called')
 
     for user in users_ref:
+        print('hello')
         user_id = user.id  # Get the UID of the user
-        print(user_id)
+        print(f"Processing user ID: {user_id}")
+
         # Get all documents in the user's email collection
-        user_email_collections = user_id.reference.collections()
-        
-        for user_email_collection in user_email_collections:
-            print(user_email_collection)
-            user_products_ref = user_email_collection.stream()
-            
-            for product in user_products_ref:
-                product_data = product.to_dict()
-                print(product)
-                fcm_token = product_data.get('FCM-Token')
+        try:
+            user_email_collections = user.reference.collections()
+            for user_email_collection in user_email_collections:
+                print(f"Processing email collection: {user_email_collection.id}")
+
+                user_products_ref = user_email_collection.stream()
                 
-                # Fetch product information from the 'products' collection
-                products_ref = db.collection('products').stream()
-                
-                for prod in products_ref:
-                    product_name = prod.id  # Get the document ID which is the product name
+                for product in user_products_ref:
+                    product_data = product.to_dict()
+                    print(f"Processing product: {product.id}, Data: {product_data}")
+
+                    fcm_token = product_data.get('FCM-Token')
+                    if not fcm_token:
+                        print(f"No FCM token found for product: {product.id}")
+                        continue  # Skip to the next product if no FCM token
                     
-                    prod_data = prod.to_dict()
-                    actual_price = float(prod_data.get('price').replace('$', '').replace(',', ''))
-                    target_price = float(prod_data.get('targetedPrice').replace('$', '').replace(',', ''))
-                    print(actual_price)
-                    print(target_price)
-                    # Compare the prices and notify if necessary
-                    if actual_price <= target_price:
-                        # Send notification via FCM
-                        message = messaging.Message(
-                            notification=messaging.Notification(
-                                title="Price Alert!",
-                                body=f"The price for {product_name} has dropped to your target price!",
-                            ),
-                            token=fcm_token,
-                        )
-                        response = messaging.send(message)
-                        print(f'Successfully sent notification to {user_email_collection.id}: {response}')
+                    # Fetch product information from the 'products' collection
+                    products_ref = db.collection('products').stream()
+                    
+                    for prod in products_ref:
+                        product_name = prod.id  # Get the document ID which is the product name
+                        prod_data = prod.to_dict()
+                        actual_price = float(prod_data.get('price', '0').replace('$', '').replace(',', ''))
+                        target_price = float(prod_data.get('targetedPrice', '0').replace('$', '').replace(',', ''))
+                        print(f"Checking product: {product_name}, Actual Price: {actual_price}, Target Price: {target_price}")
+                        
+                        # Compare the prices and notify if necessary
+                        if actual_price <= target_price:
+                            # Send notification via FCM
+                            message = messaging.Message(
+                                notification=messaging.Notification(
+                                    title="Price Alert!",
+                                    body=f"The price for {product_name} has dropped to your target price!",
+                                ),
+                                token=fcm_token,
+                            )
+                            try:
+                                response = messaging.send(message)
+                                print(f'Successfully sent notification to {user_email_collection.id}: {response}')
+                            except Exception as e:
+                                print(f"Failed to send notification: {e}")
+        except Exception as e:
+            print(f"Error processing user {user_id}: {e}")
+
+notify_users()
+
 
 notify_users()
 
