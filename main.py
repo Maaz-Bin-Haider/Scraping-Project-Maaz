@@ -89,7 +89,7 @@ for i, name in enumerate(itemNames):
 def save_to_firestore(itemNames, itemPrices, urls):
     for i, name in enumerate(itemNames):
         doc_ref = db.collection('products').document(name)
-        doc_ref.update({
+        doc_ref.set({
             'name': name,
             'price': itemPrices[i],
             'url': urls[i],
