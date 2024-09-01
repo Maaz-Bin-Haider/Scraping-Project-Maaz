@@ -1,7 +1,7 @@
 import os
 import time
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore, messaging
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -122,7 +122,8 @@ def notify_users():
                     prod_data = prod.to_dict()
                     actual_price = float(prod_data.get('price').replace('$', '').replace(',', ''))
                     target_price = float(prod_data.get('targetedPrice').replace('$', '').replace(',', ''))
-                    
+                    print(actual_price)
+                    print(target_price)
                     # Compare the prices and notify if necessary
                     if actual_price <= target_price:
                         # Send notification via FCM
