@@ -93,7 +93,8 @@ def save_to_firestore(itemNames, itemPrices, urls):
             'name': name,
             'price': itemPrices[i],
             'url': urls[i],
-        })
+            'targetedPrice': 0
+        }, merge=True)
     print("Data saved to Firestore successfully.")
 
 save_to_firestore(itemNames, itemPrices, urls)
