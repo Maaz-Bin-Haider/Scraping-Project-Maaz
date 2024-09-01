@@ -97,5 +97,47 @@ def save_to_firestore(itemNames, itemPrices, urls):
 
 save_to_firestore(itemNames, itemPrices, urls)
 
+# function to compare prices
+def notify_users():
+    users_ref = db.collection('UsersInfo').stream()
+
+    for user in users_ref:
+        user_id = user.id  # Get the UID of the user
+        
+        # Get all documents in the user's email collection
+        user_email_collections = user.reference.collections()
+        
+        for user_email_collection in user_email_collections:
+            user_products_ref = user_email_collection.stream()
+            
+            for product in user_products_ref:
+                product_data = product.to_dict()
+                fcm_token = product_data.get('FCM-Token')
+                
+                # Fetch product information from the 'products' collection
+                products_ref = db.collection('products').stream()
+                
+                for prod in products_ref:
+                    product_name = prod.id  # Get the document ID which is the product name
+                    prod_data = prod.to_dict()
+                    actual_price = float(prod_data.get('price').replace('$', '').replace(',', ''))
+                    target_price = float(prod_data.get('targetedPrice').replace('$', '').replace(',', ''))
+                    
+                    # Compare the prices and notify if necessary
+                    if actual_price <= target_price:
+                        # Send notification via FCM
+                        message = messaging.Message(
+                            notification=messaging.Notification(
+                                title="Price Alert!",
+                                body=f"The price for {product_name} has dropped to your target price!",
+                            ),
+                            token=fcm_token,
+                        )
+                        response = messaging.send(message)
+                        print(f'Successfully sent notification to {user_email_collection.id}: {response}')
+
+notify_users()
+
+
 # Cleanup: remove the temporary credentials file
 os.remove('firebase_credentials.json')
