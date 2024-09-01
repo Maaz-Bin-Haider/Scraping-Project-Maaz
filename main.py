@@ -97,36 +97,44 @@ def save_to_firestore(itemNames, itemPrices, urls):
 
 save_to_firestore(itemNames, itemPrices, urls)
 
-# Fetch user tokens and targeted prices
-def send_notifications():
-    users_ref = db.collection('UsersInfo')
-    products_ref = db.collection('products')
-    
-    for user_doc in users_ref.stream():
-        user_email = user_doc.id
-        tokens_ref = user_doc.reference.collection(user_email)
-        tokens = [doc.to_dict()['FCM-Token'] for doc in tokens_ref.stream()]
-        
-        for product_name, price in zip(itemNames, itemPrices):
-            product_doc = products_ref.document(product_name).get()
-            if product_doc.exists:
-                product_data = product_doc.to_dict()
-                targeted_price = product_data.get('targetedPrice')
+def notify_users():
+    # Get all products
+    products = db.collection('products').stream()
+    print(products)
+
+    for product in products:
+        product_data = product.to_dict()
+        print(product_data)
+        product_id = product.id
+        current_price = product_data.get('price')
+        targeted_price = product_data.get('targetedPrice')
+        print(current_price)
+        print(targeted_price)
+
+        if current_price == targeted_price:
+            # Retrieve all FCM tokens
+            tokens = db.collection('UsersInfo').stream()
+            
+            for token_doc in tokens:
+                token_data = token_doc.to_dict()
+                fcm_token = token_data.get('FCM-Token')
                 
-                if targeted_price and price == targeted_price:
+                if fcm_token:
                     message = messaging.Message(
                         notification=messaging.Notification(
-                            title='Price Alert',
-                            body=f'The price for {product_name} has reached your target price of {targeted_price}.',
+                            title='Price Alert!',
+                            body=f'The price for {product_id} has dropped to {current_price}.'
                         ),
-                        tokens=tokens
+                        token=fcm_token
                     )
-                    
-                    response = messaging.send_multicast(message)
-                    print(f'Sent notifications to {len(tokens)} users. Success count: {response.success_count}')
+                    try:
+                        response = messaging.send(message)
+                        print(f'Successfully sent message: {response}')
+                    except Exception as e:
+                        print(f'Failed to send message: {e}')
 
-send_notifications()
-
+# Example usage
+notify_users()
 
 
 
