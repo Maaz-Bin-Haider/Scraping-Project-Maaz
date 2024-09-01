@@ -40,9 +40,10 @@ urls = [
     'https://www.jbhifi.com.au/products/hp-9t0j6pa-14-hd-laptop-256gbamd-athlon-silver',
     'https://www.jbhifi.com.au/products/apple-ipad-10-9-inch-64gb-wi-fi-silver-10th-gen',
     'https://www.jbhifi.com.au/products/lenovo-ideacentre-aio-3-27-fhd-all-in-one-pc-intel-i5512gb',
-    'https://www.jbhifi.com.au/products/aftershock-rapid-gaming-desktop-pc-ryzen-5-7500f-rtx-4060ti'
+    'https://www.jbhifi.com.au/products/aftershock-rapid-gaming-desktop-pc-ryzen-5-7500f-rtx-4060ti',
+    'https://www.jbhifi.com.au/products/apple-macbook-pro-14-inch-with-m3-pro-chip-512gb-ssd-space-black2023'
 ]
-itemNames = ['iphone 11', 'Hp Laptop', 'Ipad', 'Lenovo PC', "Afterstock Gaming PC"]
+itemNames = ['iphone 11', 'Hp Laptop', 'Ipad', 'Lenovo PC', "Afterstock Gaming PC",'Macbook Pro M3']
 itemPrices = []
 
 
@@ -93,7 +94,6 @@ def save_to_firestore(itemNames, itemPrices, urls):
             'name': name,
             'price': itemPrices[i],
             'url': urls[i],
-            'targetedPrice': 0
         }, merge=True)
     print("Data saved to Firestore successfully.")
 
