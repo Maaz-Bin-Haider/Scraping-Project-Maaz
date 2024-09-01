@@ -106,7 +106,7 @@ def notify_users():
         user_id = user.id  # Get the UID of the user
         
         # Get all documents in the user's email collection
-        user_email_collections = user.reference.collections()
+        user_email_collections = user_id.reference.collections()
         
         for user_email_collection in user_email_collections:
             user_products_ref = user_email_collection.stream()
