@@ -102,40 +102,53 @@ save_to_firestore(itemNames, itemPrices, urls)
 def notify_users():
     # Get all products
     products = db.collection('products').stream()
-    print(products)
 
     for product in products:
         product_data = product.to_dict()
-        print(product_data)
         product_id = product.id
-        current_price = float(product_data.get('price'))
-        targeted_price = float(product_data.get('targetedPrice'))
-        print(current_price)
-        print(targeted_price)
-        # to conver into float and less than feature
-        if current_price <= targeted_price:
-            # Retrieve all FCM tokens
-            tokens = db.collection('UsersInfo').stream()
-            
-            for token_doc in tokens:
-                token_data = token_doc.to_dict()
-                fcm_token = token_data.get('FCM-Token')
+        
+        # Ensure that price and targetedPrice are not None before converting
+        current_price_str = product_data.get('price')
+        targeted_price_str = product_data.get('targetedPrice')
+        
+        if current_price_str is not None and targeted_price_str is not None:
+            try:
+                # Convert price strings to float after removing any unwanted characters
+                current_price = float(current_price_str.replace('$', '').replace(',', '').strip())
+                targeted_price = float(str(targeted_price_str).replace('$', '').replace(',', '').strip())
                 
-                if fcm_token:
-                    message = messaging.Message(
-                        notification=messaging.Notification(
-                            title='Price Alert!',
-                            body=f'The price for {product_id} has dropped to {current_price}.'
-                        ),
-                        token=fcm_token
-                    )
-                    try:
-                        response = messaging.send(message)
-                        print(f'Successfully sent message: {response}')
-                    except Exception as e:
-                        print(f'Failed to send message: {e}')
+                print(f"Current price: {current_price}")
+                print(f"Targeted price: {targeted_price}")
+                
+                # Check if current price is less than or equal to targeted price
+                if current_price <= targeted_price:
+                    # Retrieve all FCM tokens
+                    tokens = db.collection('UsersInfo').stream()
+                    
+                    for token_doc in tokens:
+                        token_data = token_doc.to_dict()
+                        fcm_token = token_data.get('FCM-Token')
+                        
+                        if fcm_token:
+                            message = messaging.Message(
+                                notification=messaging.Notification(
+                                    title='Price Alert!',
+                                    body=f'The price for {product_id} has dropped to {current_price}.'
+                                ),
+                                token=fcm_token
+                            )
+                            try:
+                                response = messaging.send(message)
+                                print(f'Successfully sent message: {response}')
+                            except Exception as e:
+                                print(f'Failed to send message: {e}')
+            except ValueError as e:
+                print(f'Error converting prices for product {product_id}: {e}')
+        else:
+            print(f"Skipping product {product_id} due to missing price or targetedPrice.")
 
-# Example usage
+
+# calling
 notify_users()
 
 
