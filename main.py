@@ -108,12 +108,12 @@ def notify_users():
         product_data = product.to_dict()
         print(product_data)
         product_id = product.id
-        current_price = product_data.get('price')
-        targeted_price = product_data.get('targetedPrice')
+        current_price = float(product_data.get('price'))
+        targeted_price = float(product_data.get('targetedPrice'))
         print(current_price)
         print(targeted_price)
-
-        if current_price == targeted_price:
+        # to conver into float and less than feature
+        if current_price <= targeted_price:
             # Retrieve all FCM tokens
             tokens = db.collection('UsersInfo').stream()
             
