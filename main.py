@@ -137,11 +137,15 @@ def notify_users():
                                 notification=messaging.Notification(
                                     title='Price Alert!',
                                     body=f'The price for {product_id} has dropped to {current_price}.',
-                                    image=notification_image_url
+                                    image=notification_image_url,
+                                    
                                 ),
                                 token=fcm_token,
                                 android=messaging.AndroidConfig(
-                                    priority='high'  # Ensure high-priority delivery
+                                    priority='high',
+                                    notification=messaging.AndroidNotification(
+                                        icon='launcher_icon'  # Use the drawable resource name
+                                    )  # Ensure high-priority delivery
                                 )
                             )
                             try:
