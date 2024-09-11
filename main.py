@@ -130,16 +130,25 @@ def notify_users():
                         fcm_token = token_data.get('FCM-Token')
                         
                         if fcm_token:
+                            # Image URL for notification (must be accessible via public URL)
+                            notification_image_url = "https://firebasestorage.googleapis.com/v0/b/project-scraper-694a2.appspot.com/o/logo2.png?alt=media&token=938d3e08-f7b1-4617-b147-06b6c58c6103"  # Replace with your image URL
+
                             message = messaging.Message(
                                 notification=messaging.Notification(
                                     title='Price Alert!',
-                                    body=f'The price for {product_id} has dropped to {current_price}.'
+                                    body=f'The price for {product_id} has dropped to {current_price}.',
+                                    image=notification_image_url
                                 ),
-                                token=fcm_token
+                                token=fcm_token,
+                                android=messaging.AndroidConfig(
+                                    priority='high'  # Ensure high-priority delivery
+                                )
                             )
                             try:
                                 response = messaging.send(message)
                                 print(f'Successfully sent message: {response}')
+
+                                time.sleep(2)  # Adjust as needed
                             except Exception as e:
                                 print(f'Failed to send message: {e}')
             except ValueError as e:
