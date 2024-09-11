@@ -41,9 +41,10 @@ urls = [
     'https://www.jbhifi.com.au/products/apple-ipad-10-9-inch-64gb-wi-fi-silver-10th-gen',
     'https://www.jbhifi.com.au/products/lenovo-ideacentre-aio-3-27-fhd-all-in-one-pc-intel-i5512gb',
     'https://www.jbhifi.com.au/products/aftershock-rapid-gaming-desktop-pc-ryzen-5-7500f-rtx-4060ti',
-    'https://www.jbhifi.com.au/products/apple-macbook-pro-14-inch-with-m3-pro-chip-512gb-ssd-space-black2023'
+    'https://www.jbhifi.com.au/products/apple-macbook-pro-14-inch-with-m3-pro-chip-512gb-ssd-space-black2023',
+    'https://www.jbhifi.com.au/products/samsung-galaxy-s24-ultra-5g-256gb-titanium-grey'
 ]
-itemNames = ['iphone 11', 'Hp Laptop', 'Ipad', 'Lenovo PC', "Afterstock Gaming PC",'Macbook Pro M3']
+itemNames = ['iphone 11', 'Hp Laptop', 'Ipad', 'Lenovo PC', "Afterstock Gaming PC",'Macbook Pro M3','Galaxy S24 Ultra']
 itemPrices = []
 
 
