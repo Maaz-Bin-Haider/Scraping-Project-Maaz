@@ -36,7 +36,6 @@ driver = webdriver.Chrome(service=service, options=chrome_options)
 
 # List of URLs to scrape
 urls = [
-    'https://www.jbhifi.com.au/products/apple-iphone-11-4g-128gb-black',
     'https://www.jbhifi.com.au/products/hp-9t0j6pa-14-hd-laptop-256gbamd-athlon-silver',
     'https://www.jbhifi.com.au/products/apple-ipad-10-9-inch-64gb-wi-fi-silver-10th-gen',
     'https://www.jbhifi.com.au/products/lenovo-ideacentre-aio-3-27-fhd-all-in-one-pc-intel-i5512gb',
@@ -44,7 +43,7 @@ urls = [
     'https://www.jbhifi.com.au/products/apple-macbook-pro-14-inch-with-m3-pro-chip-512gb-ssd-space-black2023',
     'https://www.jbhifi.com.au/products/samsung-galaxy-s24-ultra-5g-256gb-titanium-grey'
 ]
-itemNames = ['iphone 11', 'Hp Laptop', 'Ipad', 'Lenovo PC', "Afterstock Gaming PC",'Macbook Pro M3','Galaxy S24 Ultra']
+itemNames = ['Hp Laptop', 'Ipad', 'Lenovo PC', "Afterstock Gaming PC",'Macbook Pro M3','Galaxy S24 Ultra']
 itemPrices = []
 
 
