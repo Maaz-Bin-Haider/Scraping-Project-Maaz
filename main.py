@@ -72,7 +72,7 @@ def scrape_price(url, index):
         itemPrices.append(price)
 
     except Exception as e:
-        itemPrices.append('server issue')
+        itemPrices.append('0')
         print(f"Error scraping {url}: {e}")
 
 # Iterate over each URL and scrape the price
